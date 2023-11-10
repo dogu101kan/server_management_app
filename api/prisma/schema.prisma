@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:1234@localhost:5432/server_management_app?schema=public"
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  servers  Server[]
+  commands Command[]
+}
+
+model Server {
+  id         Int          @id @default(autoincrement())
+  name       String
+  host       String
+  username   String
+  password   String
+  os         String
+  user       User         @relation(fields: [userId], references: [id])
+  userId     Int
+  serverInfo ServerInfo[]
+}
+
+model ServerInfo {
+  id        Int      @id @default(autoincrement())
+  server    Server   @relation(fields: [serverId], references: [id])
+  serverId  Int
+  health    Json
+  createdAt DateTime @default(now())
+}
+
+model Command {
+  id     Int    @id @default(autoincrement())
+  value  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+}
